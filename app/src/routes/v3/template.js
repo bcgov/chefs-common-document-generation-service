@@ -82,7 +82,17 @@ templateRouter.post(
       template.encodingType,
       { overwrite: truthy('overwrite', options) },
     );
+    if (!hash.success) {
+      return new Problem(hash.errorType, {
+        detail: hash.errorMsg,
+      }).send(res);
+    }
     const content = await fileCache.find(hash.hash);
+    if (!content.success) {
+      return new Problem(content.errorType, {
+        detail: content.errorMsg,
+      }).send(res);
+    }
     // Process and normalize options
     const normalizedOptions = processTemplateOptions(options, content.ext);
 
