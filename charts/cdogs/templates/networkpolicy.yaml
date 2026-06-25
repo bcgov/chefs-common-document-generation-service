@@ -8,13 +8,6 @@ metadata:
     {{- include "cdogs.labels" . | nindent 4 }}
 spec:
   ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              network.openshift.io/policy-group: ingress
-      ports:
-        - port: {{ default "8080" .Values.config.configMap.SERVER_PORT | atoi }}
-          protocol: TCP
     {{- range .Values.networkPolicy.allowedNamespaces }}
     - from:
         - namespaceSelector:
