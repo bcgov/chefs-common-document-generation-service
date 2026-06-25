@@ -58,6 +58,8 @@ spec:
                 secretKeyRef:
                   name: {{ include "carbone.configname" . }}-license
                   key: license
+            - name: CARBONE_EE_TEMPLATEPATHRETENTION
+              value: 1
           volumeMounts:
             - mountPath: /tmp/template
               name: carbone-storage
