@@ -12,7 +12,10 @@ spec:
       {{- include "carbone.selectorLabels" . | nindent 6 }}
   ingress:
     - from:
-        - namespaceSelector: {}
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ .Release.Name }}
+              app.kubernetes.io/name: 'common-document-generation-service'
       ports:
         - port: {{ default "4000" .Values.service.port | atoi }}
           protocol: TCP

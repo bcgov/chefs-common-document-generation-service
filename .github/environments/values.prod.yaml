@@ -39,3 +39,9 @@ carbone:
 
 fluentBit:
   enabled: false
+
+networkPolicy:
+  allowedNamespaces:
+    - a12c97-dev
+    - a12c97-test
+    - a12c97-prod
