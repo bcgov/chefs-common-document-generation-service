@@ -8,13 +8,14 @@ spec:
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 3
   successfulJobsHistoryLimit: 3
-  startingDeadlineSeconds: 60
+  startingDeadlineSeconds: {{ .Values.cronJob.startingDeadlineSeconds }}
   jobTemplate:
     metadata:
       labels: {{ include "cdogs.labels" . | nindent 8 }}
     spec:
-      backoffLimit: 6
-      activeDeadlineSeconds: 600
+      backoffLimit: {{ .Values.cronJob.backoffLimit }}
+      # Covers pod scheduling and RWX volume attach time, not just script runtime
+      activeDeadlineSeconds: {{ .Values.cronJob.activeDeadlineSeconds }}
       parallelism: 1
       completions: 1
       template:

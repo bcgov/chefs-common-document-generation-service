@@ -97,15 +97,48 @@ try {
  * @returns {number} The size of the path in bytes
  */
 function pathSize(path) {
-  const dirStat = statSync(path);
+  // The running service adds and removes cache entries concurrently, so a path
+  // can disappear between listing and stat-ing it. Treat that as size zero.
+  const dirStat = statSyncSafe(path);
+  if (!dirStat) return 0;
 
   if (dirStat.isDirectory()) {
-    return readdirSync(path)
+    return readdirSyncSafe(path)
       .flatMap(file => pathSize(join(path, file)))
       .reduce((i, size) => i + size, 0);
   }
   else if (dirStat.isFile()) return dirStat.size;
   else return 0;
+}
+
+/**
+ * @function statSyncSafe
+ * Stats `path`, returning null if it no longer exists
+ * @param {string} path The path to stat
+ * @returns {object|null} The stat object, or null
+ */
+function statSyncSafe(path) {
+  try {
+    return statSync(path);
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+}
+
+/**
+ * @function readdirSyncSafe
+ * Lists `path`, returning an empty list if it no longer exists
+ * @param {string} path The path to list
+ * @returns {Array<string>} The directory entries
+ */
+function readdirSyncSafe(path) {
+  try {
+    return readdirSync(path);
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
+  }
 }
 
 /**
@@ -116,14 +149,18 @@ function pathSize(path) {
  * Each object contains `name`, `size` and `time` attributes.
  */
 function getSortedPaths(path) {
-  return readdirSync(path)
+  return readdirSyncSafe(path)
     .map(file => {
       const fullDir = join(path, file);
+      const stat = statSyncSafe(fullDir);
+      if (!stat) return null;
+
       return {
         name: file,
         size: pathSize(fullDir),
-        time: statSync(fullDir).mtime.getTime(),
+        time: stat.mtime.getTime(),
       };
     })
+    .filter(item => item !== null)
     .sort((a, b) => a.time - b.time);
 }
