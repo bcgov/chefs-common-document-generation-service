@@ -33,6 +33,7 @@
     "atob": "^2.1.2",
     "bytes": "^3.1.2",
     "carbone": "^3.5.6",
+    "carbone-sdk": "^1.6.0",
     "compression": "^1.7.4",
     "config": "^3.3.12",
     "cors": "^2.8.5",
@@ -74,7 +75,7 @@
       "_": false
     },
     "parserOptions": {
-      "ecmaVersion": 9
+      "ecmaVersion": 2020
     },
     "rules": {
       "eol-last": [
@@ -94,7 +95,10 @@
       ],
       "quotes": [
         "error",
-        "single"
+        "single",
+        {
+          "avoidEscape": true
+        }
       ],
       "semi": [
         "error",

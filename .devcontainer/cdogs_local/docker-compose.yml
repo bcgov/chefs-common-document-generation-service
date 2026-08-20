@@ -1,0 +1,12 @@
+services:
+  carbone:
+    image: carbone/carbone-ee:full
+    ports:
+      - "4000:4000"
+    secrets:
+      - source: carbone-license
+        target: /app/config/prod.carbone-license
+
+secrets:
+  carbone-license:
+    file: ./carbone-license.txt

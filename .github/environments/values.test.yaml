@@ -31,5 +31,10 @@ persistentVolumeClaim:
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 5G
 
+carbone:
+  enabled: true
+  persistentVolumeClaim:
+    storageSize: 10G
+
 fluentBit:
   enabled: true

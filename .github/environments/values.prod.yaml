@@ -5,7 +5,7 @@ features:
 config:
   enabled: true
   configMap:
-    KC_ENABLED: "true"
+    KC_ENABLED: "false"
     KC_PUBLICKEY: >-
       MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtq5+xTKB1FRCwufdluEx8mNIZU3eXpo91QUrqlpq226HcyF9WPihdpuZzdlS+kW6EC2prZfJpvDvzT/Og4fx9ZoQVKV0uYvWvEg5Sc3ikQMfO0ngqUC6FkxElj9LzpijpdEQd0JAmmem2329lITwWroX70imLhYu3aY+Q3hSY2lg5OJCBw0I2pulfQiMsGn3vgkwSvmIsDhOgSnwPJhPxD9TY6kjvTff6LB1bFSwlxh1l8dRBqRabDunoHn/uHfhVAHB/SgPkvP5Ybc5bP/idBNP0kiQcWiT02Z7aB1r7Fnd5YH9FEDhhF5OIYYBzHP4hPm6AgqG/IDhAuiqf/F9eQIDAQAB
     KC_REALM: comsvcauth
@@ -31,5 +31,17 @@ persistentVolumeClaim:
   # -- PVC Storage size (use M or G, not Mi or Gi)
   storageSize: 5G
 
-fluentBit:
+carbone:
   enabled: true
+  persistentVolumeClaim:
+    enabled: true
+    storageSize: 10G
+
+fluentBit:
+  enabled: false
+
+networkPolicy:
+  allowedNamespaces:
+    - a12c97-dev
+    - a12c97-test
+    - a12c97-prod

@@ -51,10 +51,12 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: dev
           job_name: master
+          route_name: dev-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: dev
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          chart_path: charts/cdogs
 
   deploy-test:
     name: Deploy to Test
@@ -77,10 +79,12 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: test
           job_name: master
+          route_name: test-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: test
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          chart_path: charts/cdogs
 
   deploy-prod:
     name: Deploy to Prod
@@ -104,7 +108,9 @@ jobs:
           aws_role_arn: ${{ secrets.AWS_ROLE_ARN }}
           environment: prod
           job_name: master
+          route_name: prod-master
           namespace_prefix: ${{ env.NAMESPACE_PREFIX }}
           namespace_environment: prod
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          chart_path: charts/cdogs
