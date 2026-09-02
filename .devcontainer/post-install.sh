@@ -36,10 +36,18 @@ if [ ! -d "app" ]; then
     exit 1
 fi
 
-# Check if the license exists
+# Check if the license exists. This is only needed to run the Carbone Enterprise container
+# locally, so warn rather than fail - the rest of the container is still usable without it.
 if [ ! -f "${CDOGS_LOCAL_DIR}/carbone-license.txt" ]; then
-    echo "Error: Carbone license file not found in ${CDOGS_LOCAL_DIR}. Please add your carbone-license.txt file and try again."
-    exit 1
+    echo ""
+    echo "Warning: Carbone license file not found in ${CDOGS_LOCAL_DIR}."
+    echo "  The devcontainer will finish setting up, but the Carbone Enterprise service"
+    echo "  will not start until you add it."
+    echo ""
+    echo "  To fix: save your Carbone EE license key as carbone-license.txt in"
+    echo "  ${CDOGS_LOCAL_DIR}, then run:"
+    echo "    docker compose -f ${CDOGS_LOCAL_DIR}/docker-compose.yml up -d"
+    echo ""
 fi
 
 (cd app && npm install)

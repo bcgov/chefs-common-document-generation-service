@@ -57,6 +57,27 @@ RUN ARCH=$(dpkg --print-architecture) && \
     chmod +x /usr/local/bin/k6 && \
     rm -rf /tmp/k6*
 
+# Install helm (ARM64 or AMD64 depending on host)
+# 3.17+ is required for `helm upgrade --take-ownership`; see docs/deploy-a12c97-prod.md
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then HELM_ARCH="amd64"; else HELM_ARCH="arm64"; fi && \
+    HELM_VERSION="v3.21.4" && \
+    curl -L "https://get.helm.sh/helm-${HELM_VERSION}-linux-${HELM_ARCH}.tar.gz" -o /tmp/helm.tar.gz && \
+    tar -xzf /tmp/helm.tar.gz -C /tmp && \
+    mv /tmp/linux-${HELM_ARCH}/helm /usr/local/bin/helm && \
+    chmod +x /usr/local/bin/helm && \
+    rm -rf /tmp/helm.tar.gz /tmp/linux-${HELM_ARCH}
+
+# Install the OpenShift CLI (ARM64 or AMD64 depending on host)
+# Tracks the mirror's `stable` channel rather than a pinned version: the cluster is upgraded
+# on the platform team's schedule, and oc is expected to track it.
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then OC_ARCH="amd64"; else OC_ARCH="arm64"; fi && \
+    curl -L "https://mirror.openshift.com/pub/openshift-v4/${OC_ARCH}/clients/ocp/stable/openshift-client-linux-${OC_ARCH}-rhel9.tar.gz" -o /tmp/oc.tar.gz && \
+    tar -xzf /tmp/oc.tar.gz -C /usr/local/bin oc kubectl && \
+    chmod +x /usr/local/bin/oc /usr/local/bin/kubectl && \
+    rm -f /tmp/oc.tar.gz
+
 # Install BC Sans font
 RUN wget "https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/policies-procedures-standards/web-content-development-guides/corporate-identity-assets/bcsansfont_print.zip?forcedownload=true" -O bcsans.zip && \
     unzip bcsans.zip && \

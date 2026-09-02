@@ -7,7 +7,8 @@ This dev container provides a fully configured development environment for the C
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
 - [Docker](https://www.docker.com/get-started) installed and running on your host machine
-- A valid Carbone Enterprise Edition license key
+- A valid Carbone Enterprise Edition license key — **only** if you intend to run Carbone
+  locally (see step 2)
 
 ## Setup Instructions
 
@@ -18,9 +19,20 @@ This dev container provides a fully configured development environment for the C
    cd common-document-generation-service
    ```
 
-2. **Obtain Carbone License**
+2. **Obtain Carbone License** *(optional — needed only to run Carbone locally)*
    - Place your Carbone Enterprise Edition license key in a file named `carbone-license.txt`
    - Save this file in the `.devcontainer/cdogs_local/` directory
+
+   The container builds and finishes setup without it; the post-install script prints a
+   warning rather than failing. Without the license you can still edit code, run unit tests
+   and load tests, and work with the Helm charts — you just cannot start the local Carbone
+   service, so document rendering will not work.
+
+   > **Deploying to OpenShift?** You do not need a local license file. The Carbone EE license
+   > lives in the cluster as the `carbone-license` secret in the target namespace, and the
+   > chart reads it from there — it is never created or supplied by the chart itself. So if
+   > you are only using this container to run `helm upgrade` against OpenShift, skip this
+   > step entirely. See [docs/deploy-a12c97-prod.md](../docs/deploy-a12c97-prod.md).
 
 3. **Open in VS Code**
    - Open the cloned repository in Visual Studio Code
@@ -38,6 +50,7 @@ This dev container provides:
 - **LibreOffice** with full font support for document processing
 - **Microsoft Core Fonts** and BC Sans fonts for consistent document rendering
 - **k6** load testing tool for performance testing
+- **helm** and the **OpenShift CLI** (`oc`, `kubectl`) for deploying to OpenShift
 - **Docker-in-Docker** support for running containerized services
 - **Git** for version control
 - **ESLint** and **Prettier** extensions for code quality
@@ -83,9 +96,17 @@ Once the dev container is ready:
 ## Troubleshooting
 
 - **Build Issues**: Ensure Docker is running and you have sufficient disk space
-- **License Errors**: Verify `carbone-license.txt` contains a valid Carbone EE license
+- **License Warning on Startup**: Expected if you have not added `carbone-license.txt`. Setup
+  still completes; add the file and run `docker compose -f .devcontainer/cdogs_local/docker-compose.yml up -d`
+  when you need the local Carbone service. Not required for OpenShift deployments.
+- **License Errors from Carbone**: Verify `carbone-license.txt` contains a valid Carbone EE license
 - **Port Conflicts**: Check that ports 3000 and 4000 are available on your host
 - **Permission Issues**: The post-install script sets executable permissions on shell scripts
+
+## Deploying to OpenShift
+
+`helm` and `oc` are installed in the container. See
+[docs/deploy-a12c97-prod.md](../docs/deploy-a12c97-prod.md) for the deployment runbook.
 
 ## Additional Resources
 
