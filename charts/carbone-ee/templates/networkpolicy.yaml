@@ -1,0 +1,22 @@
+{{- if .Values.networkPolicy.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-from-cdogs-app-to-{{ include "carbone.configname" . }}-app
+  labels:
+    {{- include "carbone.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "carbone.selectorLabels" . | nindent 6 }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: {{ .Release.Name }}
+              app.kubernetes.io/name: 'common-document-generation-service'
+      ports:
+        - port: {{ default "4000" .Values.service.port | atoi }}
+          protocol: TCP
+{{- end }}

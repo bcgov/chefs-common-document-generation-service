@@ -8,7 +8,9 @@ const log = require('./log')(module.filename);
 
 class FileCache {
   constructor() {
-    this._cachePath = config.has('carbone.cacheDir') ? config.get('carbone.cacheDir') : fs.realpathSync(os.tmpdir());
+    this._cachePath = config.has('carbone.cacheDir')
+      ? config.get('carbone.cacheDir')
+      : fs.realpathSync(os.tmpdir());
     // Ensure no trailing path separator
     if (this._cachePath.endsWith(path.sep)) {
       this._cachePath = this._cachePath.slice(0, -1);
@@ -17,7 +19,10 @@ class FileCache {
     try {
       fs.ensureDirSync(this._cachePath);
     } catch (e) {
-      log.error(`Could not access cache directory '${this._cachePath}'.`, { function: 'FileCache constructor', directory: this._cachePath });
+      log.error(`Could not access cache directory '${this._cachePath}'.`, {
+        function: 'FileCache constructor',
+        directory: this._cachePath,
+      });
       throw new Error(`Could not access cache directory '${this._cachePath}'.`);
     }
 
@@ -33,10 +38,10 @@ class FileCache {
           }
         });
         stream.on('end', () => resolve(hash.digest('hex')));
-        stream.on('error', error => reject(error));
+        stream.on('error', (error) => reject(error));
       });
     };
-    this._getHashPath = hash => `${this._cachePath}${path.sep}${hash}`;
+    this._getHashPath = (hash) => `${this._cachePath}${path.sep}${hash}`;
     this._getTempFilePath = () => `${this._cachePath}${path.sep}${uuidv4()}`;
   }
 
@@ -49,7 +54,7 @@ class FileCache {
       name: null,
       ext: null,
       dir: null,
-      path: null
+      path: null,
     };
     if (!hash) {
       result.errorType = 400;
@@ -63,7 +68,10 @@ class FileCache {
       if (!fs.existsSync(hashPath)) {
         result.errorType = 404;
         result.errorMsg = `Hash '${hash}' not found.`;
-        log.error(`Hash '${hash}' not found.`, { function: 'fileCache.find', result });
+        log.error(`Hash '${hash}' not found.`, {
+          function: 'fileCache.find',
+          result,
+        });
         return result;
       }
       result.hash = hash;
@@ -72,7 +80,10 @@ class FileCache {
       if (!files || files.length === 0) {
         result.errorType = 404;
         result.errorMsg = 'Hash found; could not read file from cache.';
-        log.error('Hash found. could not read file from cache', { function: 'fileCache.find', result });
+        log.error('Hash found. could not read file from cache', {
+          function: 'fileCache.find',
+          result,
+        });
         return result;
       } else {
         result.name = files[0];
@@ -84,7 +95,9 @@ class FileCache {
       }
     } catch (e) {
       result.errorType = 500;
-      log.error(`Unknown error getting file for hash '${hash}'.`, { function: 'find' });
+      log.error(`Unknown error getting file for hash '${hash}'.`, {
+        function: 'find',
+      });
       result.errorMsg = `Unknown error getting file for hash '${hash}'.`;
       return result;
     }
@@ -100,7 +113,12 @@ class FileCache {
   }
 
   async move(source, name, options = { overwrite: false }) {
-    const result = { success: false, errorType: null, errorMsg: null, hash: null };
+    const result = {
+      success: false,
+      errorType: null,
+      errorMsg: null,
+      hash: null,
+    };
 
     if (!source) {
       result.errorType = 400;
@@ -163,8 +181,18 @@ class FileCache {
     return result;
   }
 
-  async write(content, fileType, contentEncodingType = 'base64', options = { overwrite: false }) {
-    let result = { success: false, errorType: null, errorMsg: null, hash: null };
+  async write(
+    content,
+    fileType,
+    contentEncodingType = 'base64',
+    options = { overwrite: false },
+  ) {
+    let result = {
+      success: false,
+      errorType: null,
+      errorMsg: null,
+      hash: null,
+    };
 
     if (!content) {
       result.errorType = 400;
@@ -178,12 +206,12 @@ class FileCache {
     }
     const tmpFile = this._getTempFilePath();
     // save template to temp directory
-    await fs.outputFileSync(tmpFile, content, { encoding: contentEncodingType });
+    await fs.outputFile(tmpFile, content, { encoding: contentEncodingType });
 
     // move temp file to file cache
     let destFilename = path.format({
       name: uuidv4(),
-      ext: fileType.replace(/\./g, '')
+      ext: fileType.replace(/\./g, ''),
     });
     result = await this.move(tmpFile, destFilename, options);
     log.info('Template cached', { function: 'fileCache.write' });

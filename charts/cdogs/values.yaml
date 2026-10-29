@@ -26,13 +26,11 @@ failurePolicy: Retry
 podAnnotations: {}
 
 # -- Privilege and access control settings
-podSecurityContext:
-  {}
+podSecurityContext: {}
   # fsGroup: 2000
 
 # -- Privilege and access control settings
-securityContext:
-  {}
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -94,7 +92,7 @@ route:
     haproxy.router.openshift.io/timeout: 60s
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  host: chart-example.local
+  host: ~
   # path: /
   tls:
     insecureEdgeTerminationPolicy: Redirect
@@ -130,12 +128,21 @@ cronJob:
   enabled: true
   # -- Every Monday & Thursday - https://crontab.guru/#0_0_*_*_1,4
   schedule: 0 0 * * 1,4
+  # -- How long after the scheduled time a job may still be started
+  startingDeadlineSeconds: 300
+  # -- Wall-clock budget for the job, including pod scheduling and volume attach
+  activeDeadlineSeconds: 1800
+  # -- Number of retries before the job is marked failed
+  backoffLimit: 6
   # -- In test environments, you might want to create the cronjob for consistency, but suspend it
   suspend: false
 
 config:
   # Set to true if you want to let Helm manage and overwrite your configmaps.
   enabled: false
+
+  # -- Set to true to scope only configmaps to the Helm release name.
+  configMapReleaseScoped: false
 
   # -- This should be set to true if and only if you require configmaps and secrets to be release
   # scoped. In the event you want all instances in the same namespace to share a similar
@@ -156,15 +163,18 @@ config:
 
     SERVER_BODYLIMIT: 100mb
     SERVER_LOGLEVEL: http
-    SERVER_PORT: "3000"
+    SERVER_PORT: '3000'
 
     CACHE_DIR: /var/lib/file-cache/data
     CACHE_SIZE: 2GB
-    CONVERTER_FACTORY_TIMEOUT: "60000"
-    START_CARBONE: "true"
+    CONVERTER_FACTORY_TIMEOUT: '60000'
+    START_CARBONE: 'true'
     UPLOAD_FIELD_NAME: template
-    UPLOAD_FILE_COUNT: "1"
+    UPLOAD_FILE_COUNT: '1'
     UPLOAD_FILE_SIZE: 25MB
+
+    # Carbone configuration
+    CARBONE_URL: ~
 
 features:
   # -- Specifies whether to run in authenticated mode
@@ -181,6 +191,10 @@ keycloakSecretOverride:
   username: ~
   # -- Keycloak password
   password: ~
+
+carbone:
+  enabled: false
+  url: ~
 
 fluentBit:
   # -- Specifies whether the fluent-bit logging sidecar should be enabled
@@ -207,7 +221,7 @@ fluentBit:
     # -- Default image repository
     repository: docker.io/fluent
     # -- Default image tag
-    tag: "3.1.9"
+    tag: '3.1.9'
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious

@@ -1,6 +1,7 @@
 FROM docker.io/node:20.19.0-alpine
 
 ARG APP_ROOT=/opt/app-root/src
+ARG APP_PORT=3000
 ENV NO_UPDATE_NOTIFIER=true \
   PATH="/usr/lib/libreoffice/program:${PATH}" \
   PYTHONUNBUFFERED=1

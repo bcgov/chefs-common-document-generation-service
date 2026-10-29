@@ -8,13 +8,15 @@ metadata:
     {{- include "cdogs.labels" . | nindent 4 }}
 spec:
   ingress:
+    {{- range .Values.networkPolicy.allowedNamespaces }}
     - from:
         - namespaceSelector:
             matchLabels:
-              network.openshift.io/policy-group: ingress
+              kubernetes.io/metadata.name: {{ . }}
       ports:
-        - port: {{ default "8080" .Values.config.configMap.SERVER_PORT | atoi }}
+        - port: {{ default "8080" $.Values.config.configMap.SERVER_PORT | atoi }}
           protocol: TCP
+    {{- end }}
   podSelector:
     matchLabels: {{- include "cdogs.selectorLabels" . | nindent 6 }}
 {{- end }}
